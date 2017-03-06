@@ -67,6 +67,8 @@ function init() {
 		this.block_list = [];
 		this.edit_block;
 		this.block_edit_flag;
+        this.solvedData;
+        this.solvedIndex;
 
 		this.start = function() {
 			this.block_grid = [
@@ -106,65 +108,152 @@ function init() {
 		this.addblock = function() {
 			var block_idx = this.block_list.push(this.edit_block) - 1;
 			for (var i = 0; i < (this.edit_block.local_size.width * this.edit_block.local_size.height / 10000); i++) {
+                var y = Math.floor(this.edit_block.y / 100);
+                var x = Math.floor(this.edit_block.x / 100);                
 				if(this.edit_block.bl_type == BLOCK_TYPE.VERTICAL) {
-					this.block_grid[Math.floor(this.edit_block.y / 100) + i][Math.floor(this.edit_block.x / 100)].state = 1;
-					this.block_grid[Math.floor(this.edit_block.y / 100) + i][Math.floor(this.edit_block.x / 100)].block_idx = block_idx;
+					this.block_grid[y+i][x].state = 1;
+					this.block_grid[y+i][x].block_idx = block_idx;
+                    this.block_list[block_idx].block_position.push({x:x, y:y+i});
 				}
 				else {
-					this.block_grid[Math.floor(this.edit_block.y / 100)][Math.floor(this.edit_block.x / 100) + i].state = 1;
-					this.block_grid[Math.floor(this.edit_block.y / 100)][Math.floor(this.edit_block.x / 100) + i].block_idx = block_idx;
+					this.block_grid[y][x+i].state = 1;
+					this.block_grid[y][x+i].block_idx = block_idx;
+                    this.block_list[block_idx].block_position.push({x:x+i, y:y});
 				}
 			}
 		}
 
+        this.moveSolvedBlock = function(prev_flag) {
+            var solved_blk_diff = this.solvedData.diffs[this.solvedIndex];
+            var solved_blk = this.block_list[solved_blk_diff.piece-1];
+            
+            // VERTICAL
+            if (solved_blk.bl_type == 0) {
+                if (solved_blk_diff.direction) {
+                    if (prev_flag) {
+                        this.block_list[solved_blk_diff.piece-1].y -= 
+                            solved_blk_diff.steps * 100;
+                    }
+                    else {
+                        this.block_list[solved_blk_diff.piece-1].y += 
+                            solved_blk_diff.steps * 100;                        
+                    }
+                }
+                else {
+                    if (prev_flag) {
+                        this.block_list[solved_blk_diff.piece-1].y += 
+                            solved_blk_diff.steps * 100;
+                    }
+                    else {
+                        this.block_list[solved_blk_diff.piece-1].y -= 
+                            solved_blk_diff.steps * 100;                        
+                    }
+                }
+            }
+            // HORIZONTAL
+            else if (solved_blk.bl_type == 1) {
+                if (solved_blk_diff.direction) {
+                    if (prev_flag) {
+                        this.block_list[solved_blk_diff.piece-1].x += 
+                            solved_blk_diff.steps * 100;
+                    }
+                    else {
+                        this.block_list[solved_blk_diff.piece-1].x += 
+                            solved_blk_diff.steps * 100;                        
+                    }
+                }
+                else {
+                    if (prev_flag) {
+                        this.block_list[solved_blk_diff.piece-1].x -= 
+                            solved_blk_diff.steps * 100;
+                    }
+                    else {
+                        this.block_list[solved_blk_diff.piece-1].x -= 
+                            solved_blk_diff.steps * 100;                        
+                    }
+                }
+            }
+        }
+        
 		this.solution = function() {
 			//get data using ajax
 			// var data = "[{'idx': 1,'move_x': 100,'move_y': 100,'direction': 0}]";
 			// JSON.parse(data);
-			var data = [
-				{
-					'idx': 0,
-					'move_x': 100,
-					'move_y': 200,
-					'direction': 0,
-				},
-				{
-					'idx': 1,
-					'move_x': 400,
-					'move_y': 100,
-					'direction': 2,
-				},
-			];
-			var local_idx = 0;
-			var self = this;
-			var timer = setInterval(function() {
-				var elem = data[local_idx];
-				var move_block = self.block_list[elem.idx];
-				if(move_block.x != elem.move_x || move_block.y != elem.move_y) {
-					if(elem.direction == DIRECTION.UP)
-						move_block.y -= (speed * 1);
-					else if(elem.direction == DIRECTION.DOWN)
-						move_block.y += (speed * 1);
-					else if(elem.direction == DIRECTION.LEFT)
-						move_block.x -= (speed * 1);
-					else if(elem.direction == DIRECTION.RIGHT)
-						move_block.x += (speed * 1);
-				} else {
-					// console.log(elem.idx);
-					// console.log(move_block);
-					local_idx++;
-					// self.block_grid.forEach(function(e, idx) {
-					// 	if(e.block_idx == elem.idx) {
-					// 		self.block_grid[idx].state = 0;
-					// 		self.block_grid[idx].block_idx = -1;
-					// 	}
-					// });
-					self.blockgrid_update(move_block, elem.idx);
-					if(local_idx == data.length)
-						clearInterval(timer);
-				}
-				block_manager.clear();
-			}, 10);
+            var prisoner_obj;
+            this.block_list.forEach(function(elem) {
+                if (elem.bl_code == 1) {
+                    prisoner_obj = elem;
+                }
+            });
+            
+            var game = new prisoner.Game({
+                width: 6,
+                height: 6,
+                prisoner: new prisoner.Piece({x: prisoner_obj.block_position[0].x, y: prisoner_obj.block_position[0].y}, 
+                                             {x: prisoner_obj.block_position[prisoner_obj.block_position.length-1].x, y: prisoner_obj.block_position[prisoner_obj.block_position.length-1].y})
+            });
+            
+            this.block_list.forEach(function(elem) {
+                if (elem.bl_code == 0)
+                    game.addPiece(new prisoner.Piece(
+                        {x:elem.block_position[0].x, y:elem.block_position[0].y}, 
+                        {x:elem.block_position[elem.block_position.length-1].x, y:elem.block_position[elem.block_position.length-1].y}));
+            });
+            
+            this.solvedData = prisoner.solve(game);
+            $('#solution').css('display', 'none');
+            if (this.solvedData) {
+                this.solvedIndex = 0;
+                $('#solution_step').css('display', 'block');
+            }
+            else {
+                $('#no_solution').css('display', 'block');
+            }
+            
+//			var data = [
+//				{
+//					'idx': 0,
+//					'move_x': 100,
+//					'move_y': 200,
+//					'direction': 0,
+//				},
+//				{
+//					'idx': 1,
+//					'move_x': 400,
+//					'move_y': 100,
+//					'direction': 2,
+//				},
+//			];
+//			var local_idx = 0;
+//			var self = this;
+//			var timer = setInterval(function() {
+//				var elem = data[local_idx];
+//				var move_block = self.block_list[elem.idx];
+//				if(move_block.x != elem.move_x || move_block.y != elem.move_y) {
+//					if(elem.direction == DIRECTION.UP)
+//						move_block.y -= (speed * 1);
+//					else if(elem.direction == DIRECTION.DOWN)
+//						move_block.y += (speed * 1);
+//					else if(elem.direction == DIRECTION.LEFT)
+//						move_block.x -= (speed * 1);
+//					else if(elem.direction == DIRECTION.RIGHT)
+//						move_block.x += (speed * 1);
+//				} else {
+//					// console.log(elem.idx);
+//					// console.log(move_block);
+//					local_idx++;
+//					// self.block_grid.forEach(function(e, idx) {
+//					// 	if(e.block_idx == elem.idx) {
+//					// 		self.block_grid[idx].state = 0;
+//					// 		self.block_grid[idx].block_idx = -1;
+//					// 	}
+//					// });
+//					self.blockgrid_update(move_block, elem.idx);
+//					if(local_idx == data.length)
+//						clearInterval(timer);
+//				}
+//				block_manager.clear();
+//			}, 10);
 		}
 
 		this.blockgrid_update = function(b, block_idx) {
@@ -291,7 +380,7 @@ function init() {
 	}
 
 	var block = function(block_code, block_type, size) {
-		this.initial_pos = {x:0, y:0};
+        this.block_position = [];
 		this.x = 0;
 		this.y = 0;
 		this.bl_type = block_type;
@@ -451,6 +540,19 @@ function init() {
 	$('#solution').click(function() {
 		block_manager.solution();
 	});
+    
+    $('#next_step').click(function() {
+        block_manager.clear();
+        block_manager.moveSolvedBlock(false);
+        block_manager.solvedIndex++;
+    });
+    
+    $('#prev_step').click(function() {
+        block_manager.clear();
+        block_manager.moveSolvedBlock(true);
+        block_manager.solvedIndex--;
+    });
+    
 	animate();
 }
 
