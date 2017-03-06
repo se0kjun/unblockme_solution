@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://cdn.rawgit.com/benletchford/prisoner/master/prisoner.min.js"></script>
 	<script src="./bower_components/jquery/dist/jquery.min.js"></script>
 	<script src="./js/common.js"></script>
 	<link rel="stylesheet" href="./css/common.css">
@@ -19,25 +20,30 @@
 					<canvas id="moving_block" width="600" height="600"></canvas>
 					<!-- <canvas id="glow" width="600" height="600"></canvas> -->
 				</div>
-				<div class="canvas-container">
-					<div id="big_vertical" class="big_block" value="big_vertical">
+				<div class="block-container">
+					<div id="big_vertical" class="big_block unblock_object vertical_block" value="big_vertical">
 						<img src="./res/vertical_300.png"></img>
 					</div>
-					<div id="small_vertical" class="small_block" value="small_vertical">
+					<div id="small_vertical" class="small_block unblock_object vertical_block" value="small_vertical">
 						<img src="./res/vertical_200.png"></img>
 					</div>
-					<div id="big_horizontal" class="big_block" value="big_horizontal">
+					<div id="big_horizontal" class="big_block unblock_object horizontal_block" value="big_horizontal">
 						<img src="./res/horizon_300.png"></img>
 					</div>
-					<div id="small_horizontal" class="small_block" value="small_horizontal">
+					<div id="small_horizontal" class="small_block unblock_object horizontal_block" value="small_horizontal">
 						<img src="./res/horizon_200.png"></img>
 					</div>
-					<div id="object_block">
+					<div id="object_block" class="unblock_object">
 						<img src="./res/gold_object_block.png"></img>
 					</div>
-					<div id="solution">
-						<p>sol</p>
+					<div id="solution" class="btn">
+						<p>Solution</p>
 					</div>
+                    <div id="solution_step">    
+                        <div id="next_step" class="arrow arrow-right"></div>    
+                        <div id="prev_step" class="arrow arrow-left"></div>
+                    </div>
+                    <div id="no_solution">No Solution</div>
 				</div>
 			</div>
 		</div>

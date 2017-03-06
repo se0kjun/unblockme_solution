@@ -13,7 +13,6 @@ body {
 	padding: 0;
 	width: 100%;
 	height: 100%;
-	margin-top:30px;
 	position: absolute;
 }
 
@@ -75,4 +74,91 @@ body {
 	top: 10px;
 	left: 10px;
 	z-index: 40;
+}
+
+.block-container {
+    margin:0 auto;
+    width:470px;
+}
+
+.unblock_object {
+    display:inline-block;
+}
+
+.vertical_block.big_block > img {
+    max-height:150px;
+}
+
+.vertical_block.small_block > img {
+    max-height:100px;
+}
+
+.horizontal_block.big_block > img {
+    max-width:150px;
+}
+
+.horizontal_block.small_block > img {
+    max-width:100px;
+}
+
+#object_block > img {
+    max-width:100px;
+}
+
+#solution {
+    text-align:center;
+    width:30%;
+    margin:0 auto;
+}
+
+#solution_step {
+    display:none;   
+}
+
+#no_solution {
+    display:none;
+}
+
+.arrow-right {
+    float:right;
+    width: 0; 
+    height: 0; 
+    border-top: 30px solid transparent;
+    border-bottom: 30px solid transparent;
+
+    border-left: 30px solid green;
+}
+
+.arrow-left {
+    float:left;
+    width: 0; 
+    height: 0; 
+    border-top: 30px solid transparent;
+    border-bottom: 30px solid transparent; 
+
+    border-right:30px solid blue; 
+}
+
+.btn {
+    background: #3498db;
+    background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+    background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+    background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+    background-image: -o-linear-gradient(top, #3498db, #2980b9);
+    background-image: linear-gradient(to bottom, #3498db, #2980b9);
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background: #3cb0fd;
+    background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+    text-decoration: none;
 }
