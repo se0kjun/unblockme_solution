@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="./bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="./js/common.js"></script>
+	<link rel="stylesheet" href="./css/common.css">
+	<!-- <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css"> -->
+</head>
+<body>
+	<div class="body-container">
+		<div class="wrapper">
+			<div class="container">
+				<h1>Unblock Me Solution!</h1>
+			</div>
+			<div class="container">
+				<div class="canvas-container">
+					<canvas id="environment" width="640" height="640"></canvas>
+					<canvas id="block" width="600" height="600"></canvas>
+					<canvas id="moving_block" width="600" height="600"></canvas>
+					<!-- <canvas id="glow" width="600" height="600"></canvas> -->
+				</div>
+				<div class="canvas-container">
+					<div id="big_vertical" class="big_block" value="big_vertical">
+						<img src="./res/vertical_300.png"></img>
+					</div>
+					<div id="small_vertical" class="small_block" value="small_vertical">
+						<img src="./res/vertical_200.png"></img>
+					</div>
+					<div id="big_horizontal" class="big_block" value="big_horizontal">
+						<img src="./res/horizon_300.png"></img>
+					</div>
+					<div id="small_horizontal" class="small_block" value="small_horizontal">
+						<img src="./res/horizon_200.png"></img>
+					</div>
+					<div id="object_block">
+						<img src="./res/gold_object_block.png"></img>
+					</div>
+					<div id="solution">
+						<p>sol</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
