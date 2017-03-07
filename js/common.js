@@ -124,10 +124,16 @@ function init() {
 		}
 
         this.moveSolvedBlock = function(prev_flag) {
+            $('#current_step').text(this.solvedIndex + 1);
+            
             var solved_blk_diff = this.solvedData.diffs[this.solvedIndex];
             var solved_blk_idx;
-            if (solved_blk_diff.piece != 0)
-                solved_blk_idx = solved_blk_diff.piece-1;
+            if (solved_blk_diff.piece != 0) {
+                this.block_list.forEach(function(elem, elem_idx) {
+                    if (elem.solved_piece_idx == solved_blk_diff.piece)
+                        solved_blk_idx = elem_idx;
+                }, this);
+            }
             else
                 this.block_list.forEach(function(elem, elem_idx) {
                     if (elem.bl_code == 1)
@@ -183,9 +189,6 @@ function init() {
         }
         
 		this.solution = function() {
-			//get data using ajax
-			// var data = "[{'idx': 1,'move_x': 100,'move_y': 100,'direction': 0}]";
-			// JSON.parse(data);
             var prisoner_obj;
             this.block_list.forEach(function(elem) {
                 if (elem.bl_code == 1) {
@@ -207,19 +210,30 @@ function init() {
                         {x:elem.block_position[elem.block_position.length-1].x, y:elem.block_position[elem.block_position.length-1].y}));
             });
             
+            game.pieces.forEach(function(elem, piece_idx) {
+                this.block_list.forEach(function(blk_elem) {
+                    if (elem.begin.x * 100 == blk_elem.x && elem.begin.y * 100 == blk_elem.y)
+                        blk_elem.solved_piece_idx = piece_idx;
+                });
+            }, this);
+            
             this.solvedData = prisoner.solve(game);
             $('#solution').css('display', 'none');
+            $('#solution_progress').css('display', 'block');
             if (this.solvedData) {
+                $('#total_step').text(this.solvedData.steps.length);
+                $('#current_step').text('0');
                 this.solvedIndex = 0;
+                $('#solution_progress').css('display', 'none');
                 $('#solution_step').css('display', 'block');
             }
             else {
+                $('#solution_progress').css('display', 'none');
                 $('#no_solution').css('display', 'block');
             }
 		}
 
 		this.blockgrid_update = function(b, block_idx) {
-			console.log(block_idx);
 			this.block_grid.forEach(function(elem, idx){
 				elem.forEach(function(grid, idx){
 					if(grid.block_idx == block_idx) {
@@ -504,15 +518,19 @@ function init() {
 	});
     
     $('#next_step').click(function() {
-        block_manager.clear();
-        block_manager.moveSolvedBlock(false);
-        block_manager.solvedIndex++;
+        if (block_manager.solvedIndex != block_manager.solvedData.steps.length) {
+            block_manager.clear();
+            block_manager.moveSolvedBlock(false);
+            block_manager.solvedIndex++;
+        }
     });
     
     $('#prev_step').click(function() {
-        block_manager.solvedIndex--;
-        block_manager.clear();
-        block_manager.moveSolvedBlock(true);
+        if (block_manager.solvedIndex != 0) {
+            block_manager.solvedIndex--;
+            block_manager.clear();
+            block_manager.moveSolvedBlock(true);
+        }
     });
     
 	animate();
