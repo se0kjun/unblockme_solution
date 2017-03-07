@@ -125,50 +125,57 @@ function init() {
 
         this.moveSolvedBlock = function(prev_flag) {
             var solved_blk_diff = this.solvedData.diffs[this.solvedIndex];
-            var solved_blk = this.block_list[solved_blk_diff.piece-1];
+            var solved_blk_idx;
+            if (solved_blk_diff.piece != 0)
+                solved_blk_idx = solved_blk_diff.piece-1;
+            else
+                this.block_list.forEach(function(elem, elem_idx) {
+                    if (elem.bl_code == 1)
+                        solved_blk_idx = elem_idx;
+                });
             
             // VERTICAL
-            if (solved_blk.bl_type == 0) {
+            if (this.block_list[solved_blk_idx].bl_type == 0) {
                 if (solved_blk_diff.direction) {
                     if (prev_flag) {
-                        this.block_list[solved_blk_diff.piece-1].y -= 
+                        this.block_list[solved_blk_idx].y -= 
                             solved_blk_diff.steps * 100;
                     }
                     else {
-                        this.block_list[solved_blk_diff.piece-1].y += 
+                        this.block_list[solved_blk_idx].y += 
                             solved_blk_diff.steps * 100;                        
                     }
                 }
                 else {
                     if (prev_flag) {
-                        this.block_list[solved_blk_diff.piece-1].y += 
+                        this.block_list[solved_blk_idx].y += 
                             solved_blk_diff.steps * 100;
                     }
                     else {
-                        this.block_list[solved_blk_diff.piece-1].y -= 
+                        this.block_list[solved_blk_idx].y -= 
                             solved_blk_diff.steps * 100;                        
                     }
                 }
             }
             // HORIZONTAL
-            else if (solved_blk.bl_type == 1) {
+            else if (this.block_list[solved_blk_idx].bl_type == 1) {
                 if (solved_blk_diff.direction) {
                     if (prev_flag) {
-                        this.block_list[solved_blk_diff.piece-1].x += 
+                        this.block_list[solved_blk_idx].x -= 
                             solved_blk_diff.steps * 100;
                     }
                     else {
-                        this.block_list[solved_blk_diff.piece-1].x += 
+                        this.block_list[solved_blk_idx].x += 
                             solved_blk_diff.steps * 100;                        
                     }
                 }
                 else {
                     if (prev_flag) {
-                        this.block_list[solved_blk_diff.piece-1].x -= 
+                        this.block_list[solved_blk_idx].x += 
                             solved_blk_diff.steps * 100;
                     }
                     else {
-                        this.block_list[solved_blk_diff.piece-1].x -= 
+                        this.block_list[solved_blk_idx].x -= 
                             solved_blk_diff.steps * 100;                        
                     }
                 }
@@ -209,51 +216,6 @@ function init() {
             else {
                 $('#no_solution').css('display', 'block');
             }
-            
-//			var data = [
-//				{
-//					'idx': 0,
-//					'move_x': 100,
-//					'move_y': 200,
-//					'direction': 0,
-//				},
-//				{
-//					'idx': 1,
-//					'move_x': 400,
-//					'move_y': 100,
-//					'direction': 2,
-//				},
-//			];
-//			var local_idx = 0;
-//			var self = this;
-//			var timer = setInterval(function() {
-//				var elem = data[local_idx];
-//				var move_block = self.block_list[elem.idx];
-//				if(move_block.x != elem.move_x || move_block.y != elem.move_y) {
-//					if(elem.direction == DIRECTION.UP)
-//						move_block.y -= (speed * 1);
-//					else if(elem.direction == DIRECTION.DOWN)
-//						move_block.y += (speed * 1);
-//					else if(elem.direction == DIRECTION.LEFT)
-//						move_block.x -= (speed * 1);
-//					else if(elem.direction == DIRECTION.RIGHT)
-//						move_block.x += (speed * 1);
-//				} else {
-//					// console.log(elem.idx);
-//					// console.log(move_block);
-//					local_idx++;
-//					// self.block_grid.forEach(function(e, idx) {
-//					// 	if(e.block_idx == elem.idx) {
-//					// 		self.block_grid[idx].state = 0;
-//					// 		self.block_grid[idx].block_idx = -1;
-//					// 	}
-//					// });
-//					self.blockgrid_update(move_block, elem.idx);
-//					if(local_idx == data.length)
-//						clearInterval(timer);
-//				}
-//				block_manager.clear();
-//			}, 10);
 		}
 
 		this.blockgrid_update = function(b, block_idx) {
@@ -548,9 +510,9 @@ function init() {
     });
     
     $('#prev_step').click(function() {
+        block_manager.solvedIndex--;
         block_manager.clear();
         block_manager.moveSolvedBlock(true);
-        block_manager.solvedIndex--;
     });
     
 	animate();
